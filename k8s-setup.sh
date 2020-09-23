@@ -118,3 +118,4 @@ function setup_minion() {
   echo 'Find the kubeadm join command from $HOME/kubeadm-init.out and execute'
 }
 
+
