@@ -73,6 +73,10 @@ function setup_firewalld() {
   sudo firewall-cmd --permanent --add-port=10250/tcp
   sudo firewall-cmd --reload
   sudo firewall-cmd --list-ports
+
+  # easier to disable firewalld while learning commands
+  sudo systemctl stop firewalld
+  sudo systemctl disable firewalld
 }
 
 function setup_k8s_common() {
@@ -118,4 +122,46 @@ function setup_minion() {
   echo 'Find the kubeadm join command from $HOME/kubeadm-init.out and execute'
 }
 
+function k8s_yank() {
+  sudo docker rm `docker ps -a -q`
+  sudo docker rmi `docker images -q`
+  sudo kubeadm reset 
+  sudo yum remove kubeadm kubectl kubelet kubernetes-cni kube*    
+  sudo yum autoremove 
+  sudo rm -rf ~/.kube
+}
+
+function rm_master_taint() {
+  echo "Taint is as below currently"
+  kubectl describe nodes | grep -i Taint
+: '
+Taints:             node-role.kubernetes.io/master:NoSchedule
+Taints:             <none>
+'
+  
+  echo "Removing taint NoSchedule for master"
+  # kubectl taint nodes --all node-role.kubernetes.io/master-
+  kubectl taint nodes k8sm node-role.kubernetes.io/master-
+
+  kubectl describe nodes | grep -i Taint
+
+  echo "To restore the taint - as below"
+  echo "kubectl taint nodes k8sm node-role.kubernetes.io/master:NoSchedule"
+} 
+
+function kube_autocomplete() {
+  # Add autocomplete and an alias to .bashrc
+  cat << EOF >> ~/.bashrc
+source <(kubectl completion bash)
+alias k=kubectl
+complete -F __start_kubectl k
+alias kg='k get'
+EOF
+}
+
+
+function various_cmds() {
+  # to tail logs from a container
+
+}
 

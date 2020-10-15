@@ -21,7 +21,7 @@ sudo sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 sudo systemctl restart sshd # need to restart for above to take effect
 
 # add the ssh key to XPS and self for ansible test etc.
-cd; ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa <<<y 2>&1 > /dev/null
+#cd; ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa <<<y 2>&1 > /dev/null
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 cat ~/.ssh/id_rsa.pub | ssh ${USER}@xps "cat >> ~/.ssh/authorized_keys"
 
